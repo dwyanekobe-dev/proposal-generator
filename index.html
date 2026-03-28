@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政府補助計畫書 - 智能生成助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .markdown-body h1 { font-size: 1.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        .markdown-body h2 { font-size: 1.35rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.75rem; color: #1e3a5f; }
+        .markdown-body h3 { font-size: 1.15rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #1e293b; }
+        .markdown-body h4 { font-size: 1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #334155; }
+        .markdown-body p { margin-bottom: 1rem; line-height: 1.75; color: #475569; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #475569; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; color: #475569; }
+        .markdown-body li { margin-bottom: 0.5rem; line-height: 1.7; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body blockquote { border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; background: #eff6ff; margin: 1rem 0; border-radius: 0 0.5rem 0.5rem 0; color: #1e40af; font-style: italic; }
+        .markdown-body table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.875rem; }
+        .markdown-body th, .markdown-body td { border: 1px solid #e2e8f0; padding: 0.625rem 0.875rem; text-align: left; vertical-align: top; }
+        .markdown-body th { background-color: #f1f5f9; font-weight: 700; color: #1e293b; }
+        .markdown-body tr:nth-child(even) td { background-color: #f8fafc; }
+        .markdown-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans">
+
+    <header class="bg-blue-800 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-file-signature text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wider">補助計畫書 AI 生成助手</h1>
+            </div>
+            <div class="text-sm text-blue-200">內部顧問專用版 v2.0 ｜ 完整六章輸出</div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- 左側：輸入表單 -->
+            <div class="w-full lg:w-5/12 bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-[calc(100vh-8rem)]">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                    <h2 class="text-lg font-semibold text-slate-800"><i class="fas fa-edit mr-2 text-blue-600"></i>客戶輸入問卷</h2>
+                    <button type="button" onclick="fillDemoData()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-1.5 px-3 rounded-md transition-colors font-medium">
+                        <i class="fas fa-magic mr-1"></i> 填入範例資料
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto pr-2 space-y-5">
+
+                    <!-- 模組一：基本資料 -->
+                    <div class="pt-2">
+                        <h3 class="text-sm font-bold text-blue-700 uppercase tracking-wide mb-3"><i class="fas fa-building mr-2"></i>模組一：企業基本資料</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">公司名稱 <span class="text-red-500">*</span></label>
+                        <input type="text" id="company_name" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：捷銳精密金屬股份有限公司">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">實收資本額（千元）</label>
+                            <input type="number" id="capital" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：20000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">前一年度營業額（千元）</label>
+                            <input type="number" id="revenue" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：150000">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">員工人數（男/女）</label>
+                        <input type="text" id="employees" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：男 20 人 / 女 15 人">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">主要產品或服務（3-5 項，逗號分隔）</label>
+                        <input type="text" id="main_products" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：五軸加工零件、自行車傳動軸、航太結構件">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">公司優勢／背景一句話簡介</label>
+                        <input type="text" id="company_advantage" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：擁有 15 年精密金屬加工經驗，具備航太級認證">
+                    </div>
+
+                    <!-- 模組二：衝擊與痛點 -->
+                    <div class="pt-4 border-t border-slate-200">
+                        <h3 class="text-sm font-bold text-amber-700 uppercase tracking-wide mb-3"><i class="fas fa-bolt mr-2"></i>模組二：外部衝擊與內部痛點</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">受美國加徵關稅的具體影響（可複選）</label>
+                        <div class="space-y-2" id="tariff_impacts_container">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="客戶取消或展延訂單" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">客戶取消或展延訂單</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="客戶要求吸收關稅費用" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">客戶要求吸收關稅費用</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="原料價格上漲與成本增加" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">原料價格上漲與成本增加</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">受影響的具體事實 <span class="text-red-500">*</span></label>
+                        <textarea id="impact_facts" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="哪家客戶？因什麼原因要求降價或暫緩下單？&#10;例如：荷蘭客戶要求吸收 15% 關稅成本，否則轉單至東南亞"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">目前產線前三大內部痛點 <span class="text-red-500">*</span></label>
+                        <textarea id="pain_points" rows="3" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="1. 傳統機台要一直換治具，很慢又不準&#10;2. 現場都用紙本寫產量，不知道機台狀況&#10;3. 客戶一直要碳排數據，我們拿不出來"></textarea>
+                    </div>
+
+                    <!-- 模組三：解法 -->
+                    <div class="pt-4 border-t border-slate-200">
+                        <h3 class="text-sm font-bold text-emerald-700 uppercase tracking-wide mb-3"><i class="fas fa-cogs mr-2"></i>模組三：解法與設備清單</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">本次計畫核心目標（一句話） <span class="text-red-500">*</span></label>
+                        <input type="text" id="core_goal" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：導入五軸加工中心機與 IoT 機聯網，建立智慧化 E-bike 零件產線">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">預計導入的核心技術模組（可複選）</label>
+                        <div class="space-y-2" id="tech_modules_container">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="自動化／高精度加工技術" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">自動化／高精度加工技術</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="AOI 機器視覺檢測系統" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">AOI 機器視覺／品質線上檢測</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="IoT 機聯網與戰情看板" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">IoT 機聯網與戰情看板</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="EMS 能源管理與碳排監控" class="rounded text-blue-600 h-4 w-4">
+                                <span class="text-sm text-slate-700">EMS 能源管理與碳排監控</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-sm font-medium text-slate-800"><i class="fas fa-box-open mr-2 text-blue-600"></i>設備採購清單</label>
+                            <button type="button" onclick="addEquipment()" class="text-xs bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 py-1 px-2 rounded font-medium transition-colors">
+                                <i class="fas fa-plus"></i> 新增設備
+                            </button>
+                        </div>
+                        <div id="equipment_container" class="space-y-4">
+                            <div class="equipment-item relative bg-white p-3 rounded-md border border-slate-200 shadow-sm">
+                                <input type="text" class="equip-name w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="設備名稱（必填）">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                                    <input type="number" class="equip-price w-full sm:w-1/2 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="預估金額（未稅千元）">
+                                    <input type="text" class="equip-supplier w-full sm:w-1/2 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="採購對象（供應商）">
+                                </div>
+                                <textarea rows="2" class="equip-specs w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="主要用途／規格簡述"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模組四：效益與資源 -->
+                    <div class="pt-4 border-t border-slate-200">
+                        <h3 class="text-sm font-bold text-purple-700 uppercase tracking-wide mb-3"><i class="fas fa-chart-line mr-2"></i>模組四：預期效益與專案資源</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">預計增加產值（千元）</label>
+                            <input type="number" id="expected_revenue" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="6000">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">促成投資額（千元）</label>
+                            <input type="number" id="expected_investment" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="13300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">新增就業人數</label>
+                            <input type="number" id="expected_jobs" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="3">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">預期質化效益（效率、良率、其他）</label>
+                        <textarea id="benefits" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：產能提升 25%、良率 99.5%、可產出碳足跡數據"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">預計投入總經費估算（千元） <span class="text-red-500">*</span></label>
+                        <input type="number" id="total_budget" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例如：13300">
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-3 rounded-md border border-slate-200">
+                            <label class="block text-xs font-bold text-slate-600 mb-2">計畫主持人</label>
+                            <input type="text" id="member_host_name" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="姓名">
+                            <input type="text" id="member_host_skill" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="專長（例如：機電整合）">
+                            <input type="text" id="member_host_task" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="負責工作（例如：計畫統籌與技術驗收）">
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-md border border-slate-200">
+                            <label class="block text-xs font-bold text-slate-600 mb-2">計畫聯絡人</label>
+                            <input type="text" id="member_contact_name" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="姓名">
+                            <input type="text" id="member_contact_skill" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="專長（例如：生產管理）">
+                            <input type="text" id="member_contact_task" class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="負責工作（例如：進度追蹤與設備驗收）">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="generateProposal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-all flex justify-center items-center gap-2 group text-base">
+                        <i class="fas fa-wand-magic-sparkles group-hover:animate-pulse"></i>
+                        生成完整六章計畫書
+                    </button>
+                    <div id="error-message" class="hidden mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200"></div>
+                </div>
+            </div>
+
+            <!-- 右側：生成結果 -->
+            <div class="w-full lg:w-7/12 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[calc(100vh-8rem)]">
+                <div class="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50 rounded-t-xl">
+                    <h2 class="text-md font-semibold text-slate-800"><i class="fas fa-file-alt mr-2 text-blue-600"></i>完整計畫書預覽（六章）</h2>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="copyToClipboard()" id="copy-btn" class="hidden text-sm bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-1.5 px-3 rounded-md transition-colors shadow-sm font-medium">
+                            <i class="far fa-copy mr-1"></i> 複製全文
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-8 relative" id="result-container">
+                    <div id="empty-state" class="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
+                        <i class="fas fa-robot text-6xl opacity-20"></i>
+                        <p class="text-sm">填寫左側問卷後，點擊生成按鈕，AI 將輸出完整六章計畫書。</p>
+                        <ul class="text-xs text-slate-400 space-y-1 text-center">
+                            <li>一、計畫總覽摘要</li>
+                            <li>二、公司概況與核心優勢</li>
+                            <li>三、計畫背景與面臨挑戰</li>
+                            <li>四、計畫目標與實施方案</li>
+                            <li>五、計畫預期效益</li>
+                            <li>六、計畫資源配置與經費運用</li>
+                        </ul>
+                    </div>
+
+                    <div id="loading-state" class="hidden h-full flex flex-col items-center justify-center text-blue-600 space-y-4">
+                        <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+                        <p class="text-sm font-medium animate-pulse">AI 顧問撰寫完整計畫書中，約需 30-60 秒…</p>
+                    </div>
+
+                    <div id="output-content" class="hidden markdown-body text-slate-800"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded shadow-lg flex items-center z-50">
+        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+        <span id="toast-msg">已複製到剪貼簿</span>
+    </div>
+
+    <script>
+        // ─── 核心設定 ────────────────────────────────────────────────────────────
+        const apiKey = "AIzaSyDKoWBHPCnMh-PkANv5jRpZ6WydD5kSNu4"; // 執行環境自動提供
+
+        const systemPrompt = `你是一位擁有 20 年經驗的台灣政府補助計畫書（SBIR、CITD、低碳智造等）資深撰寫顧問。
+你的文字風格：專業、客觀、具說服力，兼具學術嚴謹與商業說服力。
+
+請根據使用者傳入的 JSON 企業資料，自動擴寫並生成一份「架構完整、邏輯嚴密、具備產業宏觀視野」的政府補助計畫書。
+
+必須完整輸出以下六個章節，缺一不可：
+
+---
+
+## 一、計畫總覽摘要
+
+（字數限制：500 字以內。請用 3-4 段話統整：①外部關稅衝擊背景、②企業現況與痛點、③本計畫核心策略、④預期量化成果與意義。結尾需點出此計畫對企業永續競爭力的戰略價值。）
+
+---
+
+## 二、公司概況與核心優勢
+
+（請根據公司基本資料擴寫以下三個子節：）
+
+### 2.1 基本資料
+（輸出一個 Markdown 表格，欄位包含：公司名稱、實收資本額、前一年度營業額、員工人數、主要認證）
+
+### 2.2 主要產品與服務
+（將主要產品清單擴寫為 4-5 個條列項目，每項加上 10-15 字的描述，說明其市場定位或技術特色）
+
+### 2.3 核心競爭優勢
+（根據公司優勢與年資，擴寫為三個具名的競爭優勢段落：技術積累、品質體系、客戶關係。每段 50-80 字，說明這些優勢如何支撐本計畫的執行底蘊。）
+
+---
+
+## 三、計畫背景與面臨挑戰
+
+（此章節是計畫書的靈魂。必須製造危機感與急迫性。請依序撰寫：）
+
+### 3.1 外部環境衝擊
+（以宏觀視野論述：美中貿易戰→關稅擴大範圍→供應鏈重組→直接衝擊具體客戶訂單。請使用受影響具體事實，將其包裝成具有「金額損失」或「訂單消失」的具體危機場景。必須用強烈語氣強調：若不轉型，企業將失去國際競爭資格，不是選擇題而是生存題。）
+
+### 3.2 關鍵轉捩點：不轉型，就出局
+（論述競爭者（東南亞、中國廠商）智慧化升級趨勢，以及歐美採購商 ESG 碳盤查門檻，說明台灣代工廠若維持現狀將遭到「開除供應商名單」而非「市場競爭失利」的命運。用數字與具體場景強化說服力。）
+
+### 3.3 內部營運痛點：三道傷口正在同時失血
+（針對三大痛點，各寫一個子節。格式：先給出痛點的小標題（用比喻或強烈語氣），再論述其成因、現象、造成的具體損失或風險，最後用一句話點出若不解決的嚴重後果。每個痛點 100-150 字。）
+
+### 3.4 結論：本計畫是止血，不是錦上添花
+（50-80 字的強力結論段，三重壓力收尾，引出計畫必要性。）
+
+---
+
+## 四、計畫目標與實施方案
+
+### 4.1 計畫核心目標
+（用一個置中的 blockquote 格式呈現核心目標句，下方再用 3-5 個條列式子目標補充，每點以動詞開頭，包含量化數字。）
+
+### 4.2 技術導入方案說明
+（針對每一個勾選的技術模組，各撰寫一個子節。格式：
+#### 方案 N｜[技術模組名稱]
+先說明導入邏輯與技術架構（100-150字），再列出系統主要功能模組（3-5個條列），最後用粗體標出「創新性：」（50-80字，說明此導入相較於傳統做法的突破點）。）
+
+### 4.3 設備採購清單
+（輸出 Markdown 表格，欄位：編號｜設備名稱｜預估金額（未稅千元）｜採購對象｜主要用途，最後一列為合計金額。）
+
+---
+
+## 五、計畫預期效益
+
+### 5.1 量化效益
+（輸出 Markdown 表格，欄位：效益指標｜現況基準值｜計畫目標值｜提升幅度。至少包含：年度總產值、OEE、客訴率、訂單準時交付率、人工成本、換線時間、能耗、促成投資額、新增就業。目標值與提升幅度請依據使用者填入的預期效益數字合理推演填入。）
+
+### 5.2 質化效益
+（輸出 Markdown 表格，欄位：面向｜升級前現況｜升級後目標｜對應解決方案。至少包含：品質可信度、製造透明度、ESG 合規能力、供應鏈資格、議價能力、人才結構六個面向。）
+
+### 5.3 對產業與社會之正面影響
+（輸出 Markdown 表格，欄位：影響層面｜具體說明。包含：產業示範效應、就業品質提升、碳減排貢獻、供應鏈韌性強化。）
+
+---
+
+## 六、計畫資源配置與經費運用
+
+### 6.1 計畫團隊
+（輸出 Markdown 表格，欄位：角色｜姓名｜專長｜計畫負責工作。）
+
+### 6.2 經費配置說明
+（輸出 Markdown 表格，欄位：項目｜金額（千元）｜佔比｜合理性說明。最後一列為合計，佔比加總 100%。）
+
+### 6.3 執行時程規劃
+（輸出 Markdown 表格，欄位：階段｜時程｜主要工作項目。分為五個階段，從 M1 到 M9。）
+
+---
+
+重要格式規則：
+1. 直接輸出 Markdown，不要包含任何問候語、說明前言或 JSON 原文。
+2. 所有章節標題必須使用 ## 或 ###，不可跳過層級。
+3. 量化數字必須合理，不可憑空捏造，請根據使用者填入資料推演。
+4. 語氣必須專業、客觀且具說服力，第三章尤其需要製造強烈危機感。
+5. 全文繁體中文。`;
+
+        // ─── 新增設備欄位 ────────────────────────────────────────────────────────
+        function addEquipment(data = null) {
+            const container = document.getElementById('equipment_container');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'equipment-item relative bg-white p-3 rounded-md border border-slate-200 shadow-sm mt-3';
+            itemDiv.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute -top-2 -right-2 bg-red-100 text-red-500 hover:bg-red-500 hover:text-white rounded-full w-6 h-6 flex items-center justify-center transition-colors border border-red-200">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+                <input type="text" class="equip-name w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" placeholder="設備名稱（必填）">
+                <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                    <input type="number" class="equip-price w-full sm:w-1/2 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="預估金額（未稅千元）">
+                    <input type="text" class="equip-supplier w-full sm:w-1/2 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="採購對象（供應商）">
+                </div>
+                <textarea rows="2" class="equip-specs w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="主要用途／規格簡述"></textarea>`;
+            if (data) {
+                itemDiv.querySelector('.equip-name').value = data.name || '';
+                itemDiv.querySelector('.equip-price').value = data.price || '';
+                itemDiv.querySelector('.equip-supplier').value = data.supplier || '';
+                itemDiv.querySelector('.equip-specs').value = data.specs || '';
+            }
+            container.appendChild(itemDiv);
+        }
+
+        // ─── 填入範例資料（崴立機電）─────────────────────────────────────────────
+        function fillDemoData() {
+            document.getElementById('company_name').value = '崴立機電股份有限公司';
+            document.getElementById('capital').value = '693000';
+            document.getElementById('revenue').value = '2800000';
+            document.getElementById('employees').value = '男 240 人 / 女 80 人';
+            document.getElementById('main_products').value = '龍門加工機、五軸加工中心機、五面加工機、立式加工機、臥式搪銑機';
+            document.getElementById('company_advantage').value = '工研院精密機械研究所核心團隊創立，與日本 JTEKT（豐田工機）策略聯盟持股 36%，機台透過 JTEKT Machinery North America 獨家代理銷往美國、日本、德國等高端市場，具備航太、汽車、能源設備產業認證。';
+            document.getElementById('core_goal').value = '建置智慧製造資訊整合平台，導入機台健康監測系統、IoT 產線戰情看板及 EMS 能源管理系統，強化大型加工機製造品質可靠性與 ESG 碳揭露能力，維繫美歐高端市場競爭地位。';
+
+            document.querySelectorAll('#tariff_impacts_container input[type="checkbox"]')[0].checked = true;
+            document.querySelectorAll('#tariff_impacts_container input[type="checkbox"]')[1].checked = true;
+            document.querySelectorAll('#tariff_impacts_container input[type="checkbox"]')[2].checked = true;
+
+            document.getElementById('impact_facts').value = '美國關稅政策自 2025 年 4 月起將台灣工具機進口稅率從 4.4% 驟升至 20%，高於日本（15%）及韓國（15%），使 JTEKT Machinery North America 在美銷售的崴立機電機台成本競爭力大幅弱化；部分美國客戶已要求重新議價或延後下訂，2025 年 Q2 北美市場報價洽談成交率較去年同期下降約 18%，影響潛在訂單金額逾新台幣 8,000 萬元。';
+            document.getElementById('pain_points').value = '1. 大型機台（龍門機、五軸機）裝配過程高度依賴資深技師經驗判斷，主軸熱變形與幾何精度缺乏即時數據監控，導致高精度件出廠良率不穩、客訴維修成本居高不下。\n2. 各廠區生產進度仍以人工報表彙整，管理層無法即時掌握工單完工率與瓶頸工序，多廠協調效率低，急單插單時常造成料件齊套延誤。\n3. 歐美航太與汽車客戶正式要求提交 Scope 2 碳排放數據作為供應商資格審核條件，崴立目前無法提供設備級能耗追蹤報告，已於 2025 年初兩次供應商資格審查中被要求限期補件。';
+
+            document.querySelectorAll('#tech_modules_container input[type="checkbox"]')[0].checked = true;
+            document.querySelectorAll('#tech_modules_container input[type="checkbox"]')[2].checked = true;
+            document.querySelectorAll('#tech_modules_container input[type="checkbox"]')[3].checked = true;
+
+            const container = document.getElementById('equipment_container');
+            container.innerHTML = '';
+            [
+                { name: '機台主軸智慧健康監測系統 × 6 套', price: '4200', supplier: '研華科技股份有限公司', specs: '內嵌振動、溫度、電流感測器，即時監控主軸熱變形與磨耗狀態，預測性維保告警，降低高精度件因主軸異常導致的不良率。' },
+                { name: 'IoT 產線戰情看板系統（閘道器 × 12 套 + 中控主機）', price: '3500', supplier: '米洛創意股份有限公司', specs: '串接各廠區工具機 PLC 與 MES 工單資料，即時顯示工單完工率、稼動率（OEE）、瓶頸工序，支援多廠區統一儀表板。' },
+                { name: '廠區 EMS 能源管理平台（智慧電表 × 20 迴路）', price: '2800', supplier: '恩昱科技股份有限公司', specs: '設備層級能耗即時監控與分析，自動換算 GHG Protocol Scope 2 碳排係數，輸出符合 CDP/SBTi 規範之碳盤查報告，應對歐美供應商 ESG 稽核。' }
+            ].forEach(eq => addEquipment(eq));
+
+            document.getElementById('expected_revenue').value = '45000';
+            document.getElementById('expected_investment').value = '10500';
+            document.getElementById('expected_jobs').value = '5';
+            document.getElementById('benefits').value = '高精度件出廠良率由 96.2% 提升至 99.1%、整體 OEE 由 67% 提升至 80%、可輸出 Scope 2 碳排報告通過歐美客戶 ESG 稽核、多廠區急單插單協調時間縮短 40%。';
+            document.getElementById('total_budget').value = '10500';
+            document.getElementById('member_host_name').value = '關永昌';
+            document.getElementById('member_host_skill').value = '精密工具機設計、機電整合系統';
+            document.getElementById('member_host_task').value = '計畫總體策略決策、機台健康監測系統技術驗收';
+            document.getElementById('member_contact_name').value = '張智遠';
+            document.getElementById('member_contact_skill').value = '資訊工程、MES 系統整合';
+            document.getElementById('member_contact_task').value = '戰情看板與 EMS 系統建置協調、跨廠區導入進度追蹤';
+
+            showToast('已帶入崴立機電範例資料，可直接點擊生成');
+        }
+
+        // ─── 核心：生成計畫書 ─────────────────────────────────────────────────────
+        async function generateProposal() {
+            const required = {
+                company_name: '公司名稱',
+                core_goal: '計畫核心目標',
+                impact_facts: '受影響具體事實',
+                pain_points: '內部三大痛點',
+                total_budget: '預計投入總經費'
+            };
+            for (const [id, label] of Object.entries(required)) {
+                if (!document.getElementById(id).value.trim()) {
+                    showError(`請填寫必填欄位：${label}`);
+                    return;
+                }
+            }
+
+            const equipments = [];
+            document.querySelectorAll('.equipment-item').forEach((item, i) => {
+                const name = item.querySelector('.equip-name').value.trim();
+                if (!name) return;
+                equipments.push({
+                    序號: i + 1,
+                    設備名稱: name,
+                    預估金額_千元: item.querySelector('.equip-price').value.trim() || '未填',
+                    供應商: item.querySelector('.equip-supplier').value.trim() || '未填',
+                    主要用途: item.querySelector('.equip-specs').value.trim() || '未填'
+                });
+            });
+
+            const inputData = {
+                公司名稱: document.getElementById('company_name').value.trim(),
+                實收資本額_千元: document.getElementById('capital').value.trim(),
+                前一年度營業額_千元: document.getElementById('revenue').value.trim(),
+                員工人數: document.getElementById('employees').value.trim(),
+                主要產品服務: document.getElementById('main_products').value.trim(),
+                公司優勢背景: document.getElementById('company_advantage').value.trim(),
+                計畫核心目標: document.getElementById('core_goal').value.trim(),
+                美國關稅影響類型: Array.from(document.querySelectorAll('#tariff_impacts_container input:checked')).map(c => c.value).join('、'),
+                受影響具體事實: document.getElementById('impact_facts').value.trim(),
+                內部三大痛點: document.getElementById('pain_points').value.trim(),
+                導入技術模組: Array.from(document.querySelectorAll('#tech_modules_container input:checked')).map(c => c.value).join('、'),
+                設備採購清單: equipments,
+                預計增加產值_千元: document.getElementById('expected_revenue').value.trim(),
+                促成投資額_千元: document.getElementById('expected_investment').value.trim(),
+                新增就業人數: document.getElementById('expected_jobs').value.trim(),
+                預期質化效益: document.getElementById('benefits').value.trim(),
+                計畫總預算_千元: document.getElementById('total_budget').value.trim(),
+                計畫主持人: {
+                    姓名: document.getElementById('member_host_name').value.trim(),
+                    專長: document.getElementById('member_host_skill').value.trim(),
+                    負責工作: document.getElementById('member_host_task').value.trim()
+                },
+                計畫聯絡人: {
+                    姓名: document.getElementById('member_contact_name').value.trim(),
+                    專長: document.getElementById('member_contact_skill').value.trim(),
+                    負責工作: document.getElementById('member_contact_task').value.trim()
+                }
+            };
+
+            hideError();
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('output-content').classList.add('hidden');
+            document.getElementById('copy-btn').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+
+            try {
+                const resultText = await callGeminiAPI(JSON.stringify(inputData, null, 2));
+                const outputDiv = document.getElementById('output-content');
+                outputDiv.innerHTML = parseMarkdown(resultText);
+                document.getElementById('loading-state').classList.add('hidden');
+                outputDiv.classList.remove('hidden');
+                document.getElementById('copy-btn').classList.remove('hidden');
+                document.getElementById('result-container').scrollTop = 0;
+            } catch (error) {
+                console.error('API 呼叫失敗:', error);
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('hidden');
+                showError('生成失敗，請稍後再試。錯誤訊息：' + error.message);
+            }
+        }
+
+        // ─── Gemini API（含 Exponential Backoff）────────────────────────────────
+        async function callGeminiAPI(userQuery, retries = 5) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: { maxOutputTokens: 8192 }
+            };
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(`HTTP ${response.status}: ${err.error?.message || '未知錯誤'}`);
+                    }
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || '無回傳內容';
+                } catch (e) {
+                    if (i === retries) throw e;
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+            }
+        }
+
+        // ─── Markdown 解析器 ──────────────────────────────────────────────────────
+        function parseMarkdown(md) {
+            let html = md;
+
+            // Tables
+            html = html.replace(/(?:^\|.+\|[\r\n]+)+/gm, match => {
+                const rows = match.trim().split('\n');
+                let table = '<table>';
+                rows.forEach((row, idx) => {
+                    if (/^\|[\s\-:|]+\|$/.test(row.replace(/\s/g, ''))) return;
+                    const cells = row.split('|').slice(1, -1);
+                    table += '<tr>' + cells.map(c => {
+                        const tag = idx === 0 ? 'th' : 'td';
+                        return `<${tag}>${c.trim()}</${tag}>`;
+                    }).join('') + '</tr>';
+                });
+                return table + '</table>';
+            });
+
+            // Blockquotes
+            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+            // Headings
+            html = html.replace(/^##### (.+)$/gm, '<h5>$1</h5>');
+            html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+            // HR
+            html = html.replace(/^---+$/gm, '<hr>');
+
+            // Bold
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // Lists
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+            // 先把每個 <li> 行個別包進 <ul>，再合併相鄰的 </ul><ul>
+            const UO = '\x3c' + 'ul\x3e', UC = '\x3c' + '/ul\x3e';
+            html = html.replace(/^(<li>.+<\/li>)$/gm, UO + '$1' + UC);
+            html = html.replace(new RegExp(UC + '\n' + UO, 'g'), '');
+
+            // Paragraphs
+            html = html.split('\n').map(line => {
+                const t = line.trim();
+                if (t && !t.startsWith('<') && !t.startsWith('|')) return `<p>${t}</p>`;
+                return line;
+            }).join('\n');
+
+            return html;
+        }
+
+        // ─── UI 工具函式 ──────────────────────────────────────────────────────────
+        function copyToClipboard() {
+            const text = document.getElementById('output-content').innerText;
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('已複製全文至剪貼簿，可直接貼入 Word。');
+            } catch {
+                showToast('複製失敗，請手動框選複製。');
+            }
+            document.body.removeChild(ta);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3500);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('error-message');
+            el.innerText = msg;
+            el.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
