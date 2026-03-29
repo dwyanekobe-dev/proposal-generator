@@ -273,7 +273,7 @@
 
     <script>
         // ─── 核心設定 ────────────────────────────────────────────────────────────
-        const apiKey = "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"; // 執行環境自動提供
+        const apiKey = "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"; // 執行環境自動提供
 
         const systemPrompt = `你是一位擁有 20 年經驗的台灣政府補助計畫書（SBIR、CITD、低碳智造等）資深撰寫顧問。
 你的文字風格：專業、客觀、具說服力，兼具學術嚴謹與商業說服力。
@@ -540,7 +540,7 @@
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${apiKey}`,
                             'HTTP-Referer': 'https://dwyanekobe-dev.github.io',
-                            'X-Title': '補助計畫書 AI 生成助手'
+                            'X-Title': 'Proposal AI Generator'
                         },
                         body: JSON.stringify(payload)
                     });
