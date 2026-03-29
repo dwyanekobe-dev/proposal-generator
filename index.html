@@ -273,7 +273,7 @@
 
     <script>
         // ─── 核心設定 ────────────────────────────────────────────────────────────
-        const apiKey = "AIzaSyCOPpGf8S1abB_fEwUNVEdzbQbTHmzNS-4"; // 執行環境自動提供
+        const apiKey = "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"; // 執行環境自動提供
 
         const systemPrompt = `你是一位擁有 20 年經驗的台灣政府補助計畫書（SBIR、CITD、低碳智造等）資深撰寫顧問。
 你的文字風格：專業、客觀、具說服力，兼具學術嚴謹與商業說服力。
@@ -520,20 +520,28 @@
             }
         }
 
-        // ─── Gemini API（含 Exponential Backoff）────────────────────────────────
+        // ─── OpenRouter API（含 Exponential Backoff）────────────────────────────
         async function callGeminiAPI(userQuery, retries = 5) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const url = `https://openrouter.ai/api/v1/chat/completions`;
             const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-                generationConfig: { maxOutputTokens: 8192 }
+                model: "google/gemini-2.0-flash-exp:free",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userQuery }
+                ],
+                max_tokens: 8192
             };
             const delays = [1000, 2000, 4000, 8000, 16000];
             for (let i = 0; i <= retries; i++) {
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`,
+                            'HTTP-Referer': 'https://dwyanekobe-dev.github.io',
+                            'X-Title': '補助計畫書 AI 生成助手'
+                        },
                         body: JSON.stringify(payload)
                     });
                     if (!response.ok) {
@@ -541,7 +549,7 @@
                         throw new Error(`HTTP ${response.status}: ${err.error?.message || '未知錯誤'}`);
                     }
                     const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || '無回傳內容';
+                    return data.choices?.[0]?.message?.content || '無回傳內容';
                 } catch (e) {
                     if (i === retries) throw e;
                     await new Promise(r => setTimeout(r, delays[i]));
