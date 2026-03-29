@@ -46,11 +46,23 @@
 
             <!-- 左側：輸入表單 -->
             <div class="w-full lg:w-5/12 bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-[calc(100vh-8rem)]">
-                <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-4">
                     <h2 class="text-lg font-semibold text-slate-800"><i class="fas fa-edit mr-2 text-blue-600"></i>客戶輸入問卷</h2>
                     <button type="button" onclick="fillDemoData()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-1.5 px-3 rounded-md transition-colors font-medium">
                         <i class="fas fa-magic mr-1"></i> 填入範例資料
                     </button>
+                </div>
+
+                <!-- Google 表單匯入區塊 -->
+                <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p class="text-xs font-bold text-green-700 mb-2"><i class="fab fa-google mr-1"></i>從 Google 表單匯入</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="sheets_url" placeholder="貼上 Google 試算表發布 CSV 網址" class="flex-1 rounded-md border border-green-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="button" onclick="importFromSheets()" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded-md font-medium whitespace-nowrap">
+                            <i class="fas fa-download mr-1"></i>匯入
+                        </button>
+                    </div>
+                    <p class="text-xs text-green-600 mt-1">試算表需先「發布至網路」為 CSV 格式才可匯入</p>
                 </div>
 
                 <div class="flex-1 overflow-y-auto pr-2 space-y-5">
@@ -393,6 +405,74 @@
                 itemDiv.querySelector('.equip-specs').value = data.specs || '';
             }
             container.appendChild(itemDiv);
+        }
+
+        // ─── Google 表單 CSV 匯入 ────────────────────────────────────────────────
+        async function importFromSheets() {
+            const url = document.getElementById('sheets_url').value.trim();
+            if (!url) { showToast('請先貼上 Google 試算表 CSV 網址'); return; }
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('無法存取，請確認網址是否已發布為 CSV');
+                const text = await res.text();
+                const rows = text.trim().split('\n').map(r => {
+                    // 處理 CSV 中含逗號的欄位（帶引號）
+                    const cols = []; let cur = '', inQ = false;
+                    for (const ch of r) {
+                        if (ch === '"') { inQ = !inQ; }
+                        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+                        else { cur += ch; }
+                    }
+                    cols.push(cur.trim());
+                    return cols;
+                });
+                if (rows.length < 2) { showToast('試算表沒有回覆資料'); return; }
+                // 取最新一筆（最後一行）
+                const last = rows[rows.length - 1];
+                // 欄位對應：timestamp(0), Q1~Q23 (1~23)
+                const v = i => (last[i] || '').replace(/^"|"$/g, '');
+                document.getElementById('company_name').value     = v(1);
+                document.getElementById('capital').value          = v(2);
+                document.getElementById('revenue').value          = v(3);
+                document.getElementById('employees').value        = v(4);
+                document.getElementById('main_products').value    = v(5);
+                document.getElementById('company_advantage').value= v(6);
+                // 關稅影響 checkboxes (v7)
+                const tariffVals = v(7).split(/[;,、]/);
+                document.querySelectorAll('#tariff_impacts_container input').forEach(cb => {
+                    cb.checked = tariffVals.some(t => t.trim().includes(cb.value.trim().slice(0,5)));
+                });
+                document.getElementById('impact_facts').value     = v(8);
+                document.getElementById('pain_points').value      = v(9);
+                document.getElementById('core_goal').value        = v(10);
+                // 技術模組 checkboxes (v11)
+                const techVals = v(11).split(/[;,、]/);
+                document.querySelectorAll('#tech_modules_container input').forEach(cb => {
+                    cb.checked = techVals.some(t => t.trim().includes(cb.value.trim().slice(0,5)));
+                });
+                // 設備清單 (v12)：每行格式 設備名稱|金額|供應商|用途
+                const container = document.getElementById('equipment_container');
+                container.innerHTML = '';
+                v(12).split('\n').forEach(line => {
+                    const parts = line.split('|');
+                    if (!parts[0].trim()) return;
+                    addEquipment({ name: parts[0]?.trim(), price: parts[1]?.trim(), supplier: parts[2]?.trim(), specs: parts[3]?.trim() });
+                });
+                document.getElementById('expected_revenue').value   = v(13);
+                document.getElementById('expected_investment').value = v(14);
+                document.getElementById('expected_jobs').value      = v(15);
+                document.getElementById('benefits').value           = v(16);
+                document.getElementById('total_budget').value       = v(17);
+                document.getElementById('member_host_name').value   = v(18);
+                document.getElementById('member_host_skill').value  = v(19);
+                document.getElementById('member_host_task').value   = v(20);
+                document.getElementById('member_contact_name').value  = v(21);
+                document.getElementById('member_contact_skill').value = v(22);
+                document.getElementById('member_contact_task').value  = v(23);
+                showToast('匯入成功！請確認資料後按生成');
+            } catch (e) {
+                showToast('匯入失敗：' + e.message);
+            }
         }
 
         // ─── 填入範例資料（崴立機電）─────────────────────────────────────────────
